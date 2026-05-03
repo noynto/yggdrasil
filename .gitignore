@@ -1,0 +1,19 @@
+# Sealed Secrets master key
+sealed-secrets-master-key.yaml
+
+# Local secret values
+*-secret-values.yaml
+*-credentials.yaml
+
+# Helm cache
+.helm/
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
