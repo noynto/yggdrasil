@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: eosa-tls
+  namespace: eosa
+spec:
+  secretName: eosa-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  commonName: eosa.me
+  dnsNames:
+    - eosa.me

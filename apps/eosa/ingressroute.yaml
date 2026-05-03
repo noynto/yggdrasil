@@ -1,0 +1,16 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: eosa
+  namespace: eosa
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: Host(`eosa.me`)
+      services:
+        - name: eosa
+          port: 80
+  tls:
+    secretName: eosa-tls
