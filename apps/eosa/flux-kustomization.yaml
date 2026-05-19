@@ -1,0 +1,33 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: eosa-app
+  namespace: flux-system
+spec:
+  interval: 10m
+  path: ./kubernetes
+  prune: true
+  targetNamespace: eosa
+  sourceRef:
+    kind: GitRepository
+    name: eosa
+  dependsOn:
+    - name: infrastructure-controllers
+    - name: infrastructure-configs
+  wait: true
+  timeout: 5m
+  patches:
+    - patch: |
+        apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+          name: eosa
+        spec:
+          template:
+            spec:
+              containers:
+                - name: eosa
+                  image: ghcr.io/noynto/eosa:1.2.0
+      target:
+        kind: Deployment
+        name: eosa
