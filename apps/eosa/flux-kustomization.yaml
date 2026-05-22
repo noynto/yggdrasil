@@ -27,13 +27,7 @@ spec:
             spec:
               containers:
                 - name: eosa
-                  image: ghcr.io/noynto/eosa:1.2.0
-                  volumeMounts:
-                    - name: tmp
-                      mountPath: /tmp
-              volumes:
-                - name: tmp
-                  emptyDir: {}
+                  image: ghcr.io/noynto/eosa:1.2.2
       target:
         kind: Deployment
         name: eosa
