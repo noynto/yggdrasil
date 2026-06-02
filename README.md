@@ -21,7 +21,7 @@ GitOps repository for my homelab infrastructure, managed by [Flux CD](https://fl
 | Certificates | [cert-manager](https://cert-manager.io) + Let's Encrypt |
 | Load Balancer | [MetalLB](https://metallb.universe.tf) |
 | Storage | [Longhorn](https://longhorn.io) |
-| Secrets | [Sealed Secrets](https://github.com/bitnami-labs/sealed-secrets) |
+| Secrets | Kubernetes Secrets (managed manually) |
 
 ## Repository Structure
 
@@ -37,5 +37,4 @@ yggdrasil/
 
 ## Security
 
-All secrets are encrypted using [Sealed Secrets](https://github.com/bitnami-labs/sealed-secrets).
-Plain Kubernetes secrets are never committed to this repository.
+Secrets are managed manually with `kubectl` and never committed to this repository.
