@@ -1,7 +1,6 @@
-# Sealed Secrets master key
-sealed-secrets-master-key.yaml
-
-# Local secret values
+# Secrets - never commit plain or sealed secrets
+*-secret.yaml
+*-sealed-secret.yaml
 *-secret-values.yaml
 *-credentials.yaml
 
