@@ -6,9 +6,9 @@ GitOps repository for my homelab infrastructure, managed by [Flux CD](https://fl
 
 ## Clusters
 
-| Cluster | Host | Description |
-|---|---|---|
-| `frigg` | Proxmox on AMD Ryzen 9 7940HS | Main homelab cluster |
+| Cluster | Host      | Description                              |
+|---|-----------|------------------------------------------|
+| `frigg` | Geekom A7 | Noeud du cluster (controlplane + worker) |
 
 ## Stack
 
@@ -17,10 +17,10 @@ GitOps repository for my homelab infrastructure, managed by [Flux CD](https://fl
 | OS | [Talos Linux](https://talos.dev) |
 | Kubernetes | 1.36 |
 | GitOps | [Flux CD](https://fluxcd.io) v2 |
-| Ingress | [Traefik](https://traefik.io) |
+| Ingress | [ingress-nginx](https://kubernetes.github.io/ingress-nginx) |
 | Certificates | [cert-manager](https://cert-manager.io) + Let's Encrypt |
 | Load Balancer | [MetalLB](https://metallb.universe.tf) |
-| Storage | NFS CSI Driver |
+| Storage | [Longhorn](https://longhorn.io) |
 | Secrets | [Sealed Secrets](https://github.com/bitnami-labs/sealed-secrets) |
 
 ## Repository Structure
