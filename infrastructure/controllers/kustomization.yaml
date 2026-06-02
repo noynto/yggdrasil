@@ -6,4 +6,4 @@ resources:
   - nginx
   - cert-manager
   - metallb
-  - nfs-csi
+  - longhorn

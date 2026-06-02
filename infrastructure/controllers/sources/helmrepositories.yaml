@@ -28,11 +28,11 @@ spec:
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
-  name: csi-driver-nfs
+  name: longhorn
   namespace: flux-system
 spec:
   interval: 24h
-  url: https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
+  url: https://charts.longhorn.io
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
