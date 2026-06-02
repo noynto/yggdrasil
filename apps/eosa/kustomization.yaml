@@ -3,6 +3,6 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - certificate.yaml
-  - ingressroute.yaml
+  - ingress.yaml
   - gitrepository.yaml
   - flux-kustomization.yaml
