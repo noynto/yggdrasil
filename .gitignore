@@ -4,6 +4,14 @@
 *-secret-values.yaml
 *-credentials.yaml
 
+# Talos / Kubernetes sensitive files
+talosconfig
+kubeconfig
+*.yaml.bak
+**/controlplane.yaml
+**/worker.yaml
+**/geekom-a7.yaml
+
 # Helm cache
 .helm/
 
