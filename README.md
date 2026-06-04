@@ -14,7 +14,7 @@ GitOps repository for my homelab infrastructure, managed by [Flux CD](https://fl
 
 | Component | Tool |
 |---|---|
-| OS | [Talos Linux](https://talos.dev) |
+| OS | [Talos Linux](https://talos.dev) v1.13.0 |
 | Kubernetes | 1.36 |
 | GitOps | [Flux CD](https://fluxcd.io) v2 |
 | Ingress | [ingress-nginx](https://kubernetes.github.io/ingress-nginx) |
@@ -34,6 +34,12 @@ yggdrasil/
 │   └── configs/            # Kubernetes configs
 └── apps/                   # Applications
 \`\`\`
+
+## Apps
+
+| App | Version | URL |
+|---|---|---|
+| [eosa](https://github.com/noynto/eosa) | 1.3.0 | https://eosa.me |
 
 ## Security
 
