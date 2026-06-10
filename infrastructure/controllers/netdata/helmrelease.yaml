@@ -27,12 +27,6 @@ spec:
         health:
           enabled: true
           path: /etc/netdata/health_alarm_notify.conf
-          data: |
-            SEND_NTFY="YES"
-            NTFY_URL="https://ntfy.noynto.me"
-            NTFY_TOPIC="netdata"
-            NTFY_USERNAME=""
-            NTFY_PASSWORD=""
     child:
       enabled: true
       configs:
