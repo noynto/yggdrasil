@@ -7,3 +7,5 @@ resources:
   - metallb
   - longhorn
   - metrics-server
+  - ntfy
+  - netdata

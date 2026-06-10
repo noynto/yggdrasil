@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ntfy
+  namespace: ntfy
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - ntfy.noynto.me
+      secretName: ntfy-tls
+  rules:
+    - host: ntfy.noynto.me
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ntfy
+                port:
+                  number: 80
