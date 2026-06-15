@@ -27,7 +27,7 @@ spec:
             spec:
               containers:
                 - name: eosa
-                  image: ghcr.io/noynto/eosa:1.10.0
+                  image: ghcr.io/noynto/eosa:1.11.0
       target:
         kind: Deployment
         name: eosa
