@@ -136,7 +136,7 @@ spec:
                 settings:
                   url: http://ntfy.ntfy.svc.cluster.local/alerts
                   httpMethod: POST
-                  body: '{"topic":"alerts","title":"{{ template "ntfy.title" . }}","message":"{{ template "ntfy.message" . }}"}'
+                  body: '{"topic":"alerts","title":"{{ "{{" }} template "ntfy.title" . {{ "}}" }}","message":"{{ "{{" }} template "ntfy.message" . {{ "}}" }}"}'
       policies.yaml:
         apiVersion: 1
         policies:
