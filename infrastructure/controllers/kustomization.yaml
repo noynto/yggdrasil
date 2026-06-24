@@ -8,4 +8,4 @@ resources:
   - longhorn
   - metrics-server
   - ntfy
-  - netdata
+  - monitoring
