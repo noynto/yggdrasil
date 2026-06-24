@@ -25,6 +25,8 @@ spec:
     deploymentMode: SingleBinary
     loki:
       auth_enabled: true
+      commonConfig:
+        replication_factor: 1
       storage:
         type: filesystem
       schemaConfig:
