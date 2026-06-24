@@ -192,6 +192,12 @@ spec:
           timeout: 2s
           override: false
 
+        resource/node:
+          attributes:
+            - key: k8s.node.name
+              value: "${env:K8S_NODE_NAME}"
+              action: upsert
+
       exporters:
         # Traces → Tempo
         otlp/tempo:
@@ -223,7 +229,7 @@ spec:
             exporters: [otlp/tempo]
           metrics:
             receivers: [otlp, hostmetrics, kubeletstats]
-            processors: [memory_limiter, k8sattributes, resourcedetection/system, batch]
+            processors: [memory_limiter, k8sattributes, resourcedetection/system, resource/node, batch]
             exporters: [prometheusremotewrite/mimir]
           logs:
             receivers: [otlp, filelog]

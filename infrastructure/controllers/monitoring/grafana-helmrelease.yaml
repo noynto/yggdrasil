@@ -106,6 +106,25 @@ spec:
             - name: DS_PROMETHEUS
               value: Mimir
     alerting:
+      templates.yaml:
+        apiVersion: 1
+        templates:
+          - orgId: 1
+            name: ntfy
+            template: |
+              {{ define "ntfy.title" -}}
+              [{{ .Status | toUpper }}] {{ range .Alerts }}{{ .Labels.alertname }} {{ end }}
+              {{- end }}
+              {{ define "ntfy.message" -}}
+              {{- if gt (len .Alerts.Firing) 0 -}}
+              Firing:{{ range .Alerts.Firing }}
+              - {{ .Labels.alertname }}{{ if .Annotations.summary }}: {{ .Annotations.summary }}{{ end }}{{ end }}
+              {{ end -}}
+              {{- if gt (len .Alerts.Resolved) 0 -}}
+              Resolved:{{ range .Alerts.Resolved }}
+              - {{ .Labels.alertname }}{{ end }}
+              {{ end -}}
+              {{- end }}
       contactpoints.yaml:
         apiVersion: 1
         contactPoints:
@@ -117,6 +136,7 @@ spec:
                 settings:
                   url: http://ntfy.ntfy.svc.cluster.local/alerts
                   httpMethod: POST
+                  body: '{"topic":"alerts","title":"{{ template "ntfy.title" . }}","message":"{{ template "ntfy.message" . }}"}'
       policies.yaml:
         apiVersion: 1
         policies:
