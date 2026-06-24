@@ -9,3 +9,4 @@ resources:
   - grafana-certificate.yaml
   - grafana-ingress.yaml
   - otel-collector-helmrelease.yaml
+  - grafana-alerting-configmap.yaml
