@@ -67,6 +67,44 @@ spec:
                 enabled: true
             secureJsonData:
               httpHeaderValue1: "default"
+    dashboardProviders:
+      dashboardproviders.yaml:
+        apiVersion: 1
+        providers:
+          - name: kubernetes
+            orgId: 1
+            folder: Kubernetes
+            type: file
+            disableDeletion: false
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/kubernetes
+    dashboards:
+      kubernetes:
+        otel-kubeletstats:
+          gnetId: 18681
+          revision: 1
+          datasource:
+            - name: DS_PROMETHEUS
+              value: Mimir
+        otel-node:
+          gnetId: 18682
+          revision: 1
+          datasource:
+            - name: DS_PROMETHEUS
+              value: Mimir
+        otel-host-metrics:
+          gnetId: 24638
+          revision: 1
+          datasource:
+            - name: DS_PROMETHEUS
+              value: Mimir
+        otel-pods-metrics:
+          gnetId: 20944
+          revision: 1
+          datasource:
+            - name: DS_PROMETHEUS
+              value: Mimir
     alerting:
       contactpoints.yaml:
         apiVersion: 1
