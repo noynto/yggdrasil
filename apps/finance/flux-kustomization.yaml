@@ -1,0 +1,54 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: finance-app
+  namespace: flux-system
+spec:
+  interval: 10m
+  path: ./kubernetes
+  prune: true
+  targetNamespace: finance
+  sourceRef:
+    kind: GitRepository
+    name: finance
+  dependsOn:
+    - name: infrastructure-controllers
+    - name: infrastructure-configs
+  wait: true
+  timeout: 5m
+  patches:
+    - patch: |
+        apiVersion: v1
+        kind: ConfigMap
+        metadata:
+          name: finance
+        data:
+          OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector.monitoring.svc.cluster.local:4317
+      target:
+        kind: ConfigMap
+        name: finance
+    - patch: |
+        apiVersion: networking.k8s.io/v1
+        kind: Ingress
+        metadata:
+          name: finance
+        spec:
+          ingressClassName: nginx
+          tls:
+            - hosts:
+                - finance.noynto.me
+              secretName: finance-tls
+          rules:
+            - host: finance.noynto.me
+              http:
+                paths:
+                  - path: /
+                    pathType: Prefix
+                    backend:
+                      service:
+                        name: finance
+                        port:
+                          number: 80
+      target:
+        kind: Ingress
+        name: finance
