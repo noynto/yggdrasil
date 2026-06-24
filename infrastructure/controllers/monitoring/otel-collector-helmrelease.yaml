@@ -220,6 +220,8 @@ spec:
             X-Scope-OrgID: "default"
           tls:
             insecure_skip_verify: false
+          resource_to_telemetry_conversion:
+            enabled: true
 
       service:
         pipelines:
