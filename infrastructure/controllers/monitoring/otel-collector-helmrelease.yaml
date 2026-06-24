@@ -1,0 +1,236 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: otel-collector
+  namespace: monitoring
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: opentelemetry-collector
+      version: ">=0.100.0 <1.0.0"
+      sourceRef:
+        kind: HelmRepository
+        name: opentelemetry
+        namespace: flux-system
+      interval: 12h
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    mode: daemonset
+
+    image:
+      repository: otel/opentelemetry-collector-contrib
+
+    serviceAccount:
+      create: true
+
+    clusterRole:
+      create: true
+      rules:
+        - apiGroups: [""]
+          resources: ["pods", "namespaces", "nodes", "nodes/metrics", "nodes/stats", "services", "endpoints"]
+          verbs: ["get", "list", "watch"]
+        - apiGroups: ["apps"]
+          resources: ["replicasets"]
+          verbs: ["get", "list", "watch"]
+        - nonResourceURLs: ["/metrics", "/metrics/cadvisor"]
+          verbs: ["get"]
+
+    extraEnvs:
+      - name: K8S_NODE_NAME
+        valueFrom:
+          fieldRef:
+            fieldPath: spec.nodeName
+
+    extraVolumes:
+      - name: hostfs
+        hostPath:
+          path: /
+      - name: varlogpods
+        hostPath:
+          path: /var/log/pods
+
+    extraVolumeMounts:
+      - name: hostfs
+        mountPath: /hostfs
+        readOnly: true
+        mountPropagation: HostToContainer
+      - name: varlogpods
+        mountPath: /var/log/pods
+        readOnly: true
+
+    ports:
+      otlp:
+        enabled: true
+      otlp-http:
+        enabled: true
+      metrics:
+        enabled: true
+
+    config:
+      receivers:
+        otlp:
+          protocols:
+            grpc:
+              endpoint: 0.0.0.0:4317
+            http:
+              endpoint: 0.0.0.0:4318
+
+        hostmetrics:
+          collection_interval: 30s
+          root_path: /hostfs
+          scrapers:
+            cpu: {}
+            load: {}
+            memory: {}
+            disk: {}
+            network: {}
+            filesystem:
+              exclude_mount_points:
+                mount_points: ["/dev/*", "/proc/*", "/sys/*", "/run/*", "/var/lib/kubelet/*", "/snap/*"]
+                match_type: regexp
+              exclude_fs_types:
+                fs_types: [autofs, binfmt_misc, bpf, cgroup2, configfs, debugfs, devpts, devtmpfs, fusectl, hugetlbfs, mqueue, nsfs, overlay, proc, procfs, pstore, securityfs, squashfs, sysfs, tracefs]
+                match_type: strict
+
+        kubeletstats:
+          collection_interval: 30s
+          auth_type: serviceAccount
+          endpoint: "https://${env:K8S_NODE_NAME}:10250"
+          insecure_skip_verify: true
+          metric_groups:
+            - node
+            - pod
+            - container
+
+        filelog:
+          include:
+            - /var/log/pods/*/*/*.log
+          exclude:
+            - /var/log/pods/monitoring_otel-collector*/*/*.log
+          start_at: end
+          include_file_path: true
+          include_file_name: false
+          operators:
+            - type: regex_parser
+              id: parser-containerd
+              regex: '^(?P<time>[^ ^Z]+Z) (?P<stream>stdout|stderr) (?P<logtag>[^ ]*) ?(?P<log>.*)$'
+              timestamp:
+                parse_from: attributes.time
+                layout: '%Y-%m-%dT%H:%M:%S.%LZ'
+            - type: regex_parser
+              id: extract_metadata_from_filepath
+              regex: '^.*\/(?P<namespace>[^_]+)_(?P<pod_name>[^_]+)_(?P<uid>[a-f0-9\-]+)\/(?P<container_name>[^\._]+)\/(?P<restart_count>\d+)\.log$'
+              parse_from: attributes["log.file.path"]
+              cache:
+                size: 128
+            - type: move
+              from: attributes.log
+              to: body
+            - type: move
+              from: attributes.stream
+              to: attributes["log.iostream"]
+            - type: move
+              from: attributes.container_name
+              to: resource["k8s.container.name"]
+            - type: move
+              from: attributes.namespace
+              to: resource["k8s.namespace.name"]
+            - type: move
+              from: attributes.pod_name
+              to: resource["k8s.pod.name"]
+            - type: remove
+              field: attributes.logtag
+
+      processors:
+        memory_limiter:
+          check_interval: 5s
+          limit_percentage: 80
+          spike_limit_percentage: 25
+
+        batch:
+          timeout: 5s
+          send_batch_size: 1000
+
+        k8sattributes:
+          auth_type: serviceAccount
+          passthrough: false
+          filter:
+            node_from_env_var: K8S_NODE_NAME
+          extract:
+            metadata:
+              - k8s.namespace.name
+              - k8s.deployment.name
+              - k8s.statefulset.name
+              - k8s.daemonset.name
+              - k8s.node.name
+              - k8s.pod.name
+              - k8s.pod.uid
+            labels:
+              - tag_name: app
+                key: app.kubernetes.io/name
+                from: pod
+          pod_association:
+            - sources:
+                - from: resource_attribute
+                  name: k8s.pod.uid
+            - sources:
+                - from: connection
+
+        resourcedetection/system:
+          detectors: [env, system]
+          timeout: 2s
+          override: false
+
+        # Injecte loki.tenant depuis le namespace k8s → X-Scope-OrgID dynamique pour Loki
+        transform/tenant:
+          log_statements:
+            - context: resource
+              statements:
+                - set(attributes["loki.tenant"], attributes["k8s.namespace.name"]) where attributes["k8s.namespace.name"] != nil
+                - set(attributes["loki.tenant"], "cluster") where attributes["k8s.namespace.name"] == nil
+
+      exporters:
+        # Traces → Tempo
+        otlp/tempo:
+          endpoint: tempo.monitoring.svc.cluster.local:4317
+          tls:
+            insecure: true
+          headers:
+            X-Scope-OrgID: "default"
+
+        # Logs → Loki (tenant dynamique via loki.tenant resource attribute)
+        loki:
+          endpoint: http://loki-gateway.monitoring.svc.cluster.local/loki/api/v1/push
+          default_labels_enabled:
+            exporter: false
+            level: true
+
+        # Métriques → Mimir
+        prometheusremotewrite/mimir:
+          endpoint: http://mimir-nginx.monitoring.svc.cluster.local/api/v1/push
+          headers:
+            X-Scope-OrgID: "default"
+          tls:
+            insecure_skip_verify: false
+
+      service:
+        pipelines:
+          traces:
+            receivers: [otlp]
+            processors: [memory_limiter, k8sattributes, resourcedetection/system, batch]
+            exporters: [otlp/tempo]
+          metrics:
+            receivers: [otlp, hostmetrics, kubeletstats]
+            processors: [memory_limiter, k8sattributes, resourcedetection/system, batch]
+            exporters: [prometheusremotewrite/mimir]
+          logs:
+            receivers: [otlp, filelog]
+            processors: [memory_limiter, k8sattributes, resourcedetection/system, transform/tenant, batch]
+            exporters: [loki]

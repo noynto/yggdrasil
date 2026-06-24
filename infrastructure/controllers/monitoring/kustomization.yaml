@@ -8,3 +8,4 @@ resources:
   - grafana-helmrelease.yaml
   - grafana-certificate.yaml
   - grafana-ingress.yaml
+  - otel-collector-helmrelease.yaml
