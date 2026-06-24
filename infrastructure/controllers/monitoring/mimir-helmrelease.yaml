@@ -25,6 +25,9 @@ spec:
     mimir:
       structuredConfig:
         multitenancy_enabled: true
+        ingester:
+          ring:
+            replication_factor: 1
     ingester:
       replicas: 1
       zoneAwareReplication:
