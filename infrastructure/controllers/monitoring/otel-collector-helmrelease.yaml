@@ -188,14 +188,6 @@ spec:
           timeout: 2s
           override: false
 
-        # Injecte loki.tenant depuis le namespace k8s → X-Scope-OrgID dynamique pour Loki
-        transform/tenant:
-          log_statements:
-            - context: resource
-              statements:
-                - set(attributes["loki.tenant"], attributes["k8s.namespace.name"]) where attributes["k8s.namespace.name"] != nil
-                - set(attributes["loki.tenant"], "cluster") where attributes["k8s.namespace.name"] == nil
-
       exporters:
         # Traces → Tempo
         otlp/tempo:
@@ -205,12 +197,11 @@ spec:
           headers:
             X-Scope-OrgID: "default"
 
-        # Logs → Loki (tenant dynamique via loki.tenant resource attribute)
-        loki:
-          endpoint: http://loki-gateway.monitoring.svc.cluster.local/loki/api/v1/push
-          default_labels_enabled:
-            exporter: false
-            level: true
+        # Logs → Loki via OTLP HTTP
+        otlphttp/loki:
+          endpoint: http://loki-gateway.monitoring.svc.cluster.local/otlp
+          headers:
+            X-Scope-OrgID: "default"
 
         # Métriques → Mimir
         prometheusremotewrite/mimir:
@@ -232,5 +223,5 @@ spec:
             exporters: [prometheusremotewrite/mimir]
           logs:
             receivers: [otlp, filelog]
-            processors: [memory_limiter, k8sattributes, resourcedetection/system, transform/tenant, batch]
-            exporters: [loki]
+            processors: [memory_limiter, k8sattributes, resourcedetection/system, batch]
+            exporters: [otlphttp/loki]
