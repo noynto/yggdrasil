@@ -349,7 +349,7 @@ spec:
                 execErrState: Error
                 for: 0s
                 annotations:
-                  summary: "{{ $labels.k8s_pod_name }} redémarre trop souvent ({{ $values.B.Value | humanize }} fois en 15min)"
+                  summary: '{{ "{{" }} $labels.k8s_pod_name {{ "}}" }} redémarre trop souvent ({{ "{{" }} $values.B.Value | humanize {{ "}}" }} fois en 15min)'
                 labels:
                   severity: critical
                 isPaused: false
