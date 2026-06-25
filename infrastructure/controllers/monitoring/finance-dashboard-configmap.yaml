@@ -81,7 +81,7 @@ data:
           "targets": [
             {
               "datasource": { "type": "prometheus", "uid": "mimir" },
-              "expr": "rate(jvm_gc_duration_seconds_sum{service_name=\"finance\"}[$__rate_interval])",
+              "expr": "rate(jvm_gc_duration_seconds_sum{service_name=\"finance\"}[5m])",
               "legendFormat": "{{k8s_pod_name}} — {{jvm_gc_name}}"
             }
           ],
