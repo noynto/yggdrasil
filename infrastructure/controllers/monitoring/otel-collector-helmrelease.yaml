@@ -24,6 +24,9 @@ spec:
   values:
     mode: daemonset
 
+    service:
+      enabled: true
+
     image:
       repository: otel/opentelemetry-collector-contrib
 
