@@ -58,7 +58,7 @@ spec:
         metadata:
           name: finance
         spec:
-          replicas: 5
+          replicas: 2
       target:
         kind: Deployment
         name: finance
