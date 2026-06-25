@@ -52,3 +52,13 @@ spec:
       target:
         kind: Ingress
         name: finance
+    - patch: |
+        apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+          name: finance
+        spec:
+          replicas: 5
+      target:
+        kind: Deployment
+        name: finance
