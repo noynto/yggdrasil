@@ -1,0 +1,186 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: finance-dashboard
+  namespace: monitoring
+data:
+  finance.json: |
+    {
+      "uid": "finance-app",
+      "title": "Finance App",
+      "tags": ["finance"],
+      "timezone": "browser",
+      "schemaVersion": 38,
+      "refresh": "30s",
+      "time": { "from": "now-1h", "to": "now" },
+      "panels": [
+        {
+          "type": "row",
+          "title": "Finance App",
+          "collapsed": false,
+          "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 }
+        },
+        {
+          "id": 1,
+          "type": "timeseries",
+          "title": "JVM CPU Utilization",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 1 },
+          "datasource": { "type": "prometheus", "uid": "mimir" },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "mimir" },
+              "expr": "jvm_cpu_recent_utilization_ratio{service_name=\"finance\"}",
+              "legendFormat": "{{k8s_pod_name}}"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": { "unit": "percentunit", "min": 0, "max": 1 }
+          }
+        },
+        {
+          "id": 2,
+          "type": "timeseries",
+          "title": "JVM Heap Memory",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 1 },
+          "datasource": { "type": "prometheus", "uid": "mimir" },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "mimir" },
+              "expr": "sum(jvm_memory_used_bytes{service_name=\"finance\", jvm_memory_type=\"heap\"}) by (k8s_pod_name)",
+              "legendFormat": "Used — {{k8s_pod_name}}"
+            },
+            {
+              "datasource": { "type": "prometheus", "uid": "mimir" },
+              "expr": "sum(jvm_memory_limit_bytes{service_name=\"finance\", jvm_memory_type=\"heap\"}) by (k8s_pod_name)",
+              "legendFormat": "Limit — {{k8s_pod_name}}"
+            }
+          ],
+          "fieldConfig": { "defaults": { "unit": "bytes" } }
+        },
+        {
+          "id": 3,
+          "type": "timeseries",
+          "title": "JVM Threads",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 9 },
+          "datasource": { "type": "prometheus", "uid": "mimir" },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "mimir" },
+              "expr": "jvm_thread_count{service_name=\"finance\"}",
+              "legendFormat": "{{k8s_pod_name}} — {{jvm_thread_daemon}}"
+            }
+          ],
+          "fieldConfig": { "defaults": { "unit": "short" } }
+        },
+        {
+          "id": 4,
+          "type": "timeseries",
+          "title": "JVM GC Duration Rate",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 9 },
+          "datasource": { "type": "prometheus", "uid": "mimir" },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "mimir" },
+              "expr": "rate(jvm_gc_duration_seconds_sum{service_name=\"finance\"}[$__rate_interval])",
+              "legendFormat": "{{k8s_pod_name}} — {{jvm_gc_name}}"
+            }
+          ],
+          "fieldConfig": { "defaults": { "unit": "s" } }
+        },
+        {
+          "type": "row",
+          "title": "MongoDB",
+          "collapsed": false,
+          "gridPos": { "h": 1, "w": 24, "x": 0, "y": 17 }
+        },
+        {
+          "id": 5,
+          "type": "timeseries",
+          "title": "MongoDB CPU",
+          "gridPos": { "h": 8, "w": 8, "x": 0, "y": 18 },
+          "datasource": { "type": "prometheus", "uid": "mimir" },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "mimir" },
+              "expr": "rate(container_cpu_time_seconds_total{k8s_namespace_name=\"finance\", k8s_container_name=\"mongodb\"}[$__rate_interval])",
+              "legendFormat": "CPU"
+            }
+          ],
+          "fieldConfig": { "defaults": { "unit": "cores" } }
+        },
+        {
+          "id": 6,
+          "type": "timeseries",
+          "title": "MongoDB Memory",
+          "gridPos": { "h": 8, "w": 8, "x": 8, "y": 18 },
+          "datasource": { "type": "prometheus", "uid": "mimir" },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "mimir" },
+              "expr": "container_memory_working_set_bytes{k8s_namespace_name=\"finance\", k8s_container_name=\"mongodb\"}",
+              "legendFormat": "Working Set"
+            },
+            {
+              "datasource": { "type": "prometheus", "uid": "mimir" },
+              "expr": "container_memory_rss_bytes{k8s_namespace_name=\"finance\", k8s_container_name=\"mongodb\"}",
+              "legendFormat": "RSS"
+            }
+          ],
+          "fieldConfig": { "defaults": { "unit": "bytes" } }
+        },
+        {
+          "id": 7,
+          "type": "timeseries",
+          "title": "MongoDB Network I/O",
+          "gridPos": { "h": 8, "w": 8, "x": 16, "y": 18 },
+          "datasource": { "type": "prometheus", "uid": "mimir" },
+          "targets": [
+            {
+              "datasource": { "type": "prometheus", "uid": "mimir" },
+              "expr": "rate(k8s_pod_network_io_bytes_total{k8s_namespace_name=\"finance\", k8s_pod_name=\"mongodb-0\", direction=\"receive\"}[$__rate_interval])",
+              "legendFormat": "Receive"
+            },
+            {
+              "datasource": { "type": "prometheus", "uid": "mimir" },
+              "expr": "rate(k8s_pod_network_io_bytes_total{k8s_namespace_name=\"finance\", k8s_pod_name=\"mongodb-0\", direction=\"transmit\"}[$__rate_interval])",
+              "legendFormat": "Transmit"
+            }
+          ],
+          "fieldConfig": { "defaults": { "unit": "Bps" } }
+        },
+        {
+          "type": "row",
+          "title": "Logs",
+          "collapsed": false,
+          "gridPos": { "h": 1, "w": 24, "x": 0, "y": 26 }
+        },
+        {
+          "id": 8,
+          "type": "logs",
+          "title": "Finance Logs",
+          "gridPos": { "h": 12, "w": 12, "x": 0, "y": 27 },
+          "datasource": { "type": "loki", "uid": "loki" },
+          "targets": [
+            {
+              "datasource": { "type": "loki", "uid": "loki" },
+              "expr": "{k8s_namespace_name=\"finance\", k8s_container_name=\"finance\"}"
+            }
+          ],
+          "options": { "dedupStrategy": "none", "showLabels": false, "sortOrder": "Descending", "wrapLogMessage": true }
+        },
+        {
+          "id": 9,
+          "type": "logs",
+          "title": "MongoDB Logs",
+          "gridPos": { "h": 12, "w": 12, "x": 12, "y": 27 },
+          "datasource": { "type": "loki", "uid": "loki" },
+          "targets": [
+            {
+              "datasource": { "type": "loki", "uid": "loki" },
+              "expr": "{k8s_namespace_name=\"finance\", k8s_container_name=\"mongodb\"}"
+            }
+          ],
+          "options": { "dedupStrategy": "none", "showLabels": false, "sortOrder": "Descending", "wrapLogMessage": true }
+        }
+      ]
+    }

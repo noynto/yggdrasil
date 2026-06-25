@@ -10,3 +10,4 @@ resources:
   - grafana-ingress.yaml
   - otel-collector-helmrelease.yaml
   - grafana-alerting-configmap.yaml
+  - finance-dashboard-configmap.yaml

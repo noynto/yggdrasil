@@ -79,6 +79,14 @@ spec:
             editable: true
             options:
               path: /var/lib/grafana/dashboards/kubernetes
+          - name: finance
+            orgId: 1
+            folder: Finance
+            type: file
+            disableDeletion: false
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/finance
     dashboards:
       kubernetes:
         otel-kubeletstats:
@@ -109,4 +117,8 @@ spec:
       - name: alerting-provisioning
         mountPath: /etc/grafana/provisioning/alerting
         configMap: grafana-alerting-provisioning
+        readOnly: true
+      - name: finance-dashboard
+        mountPath: /var/lib/grafana/dashboards/finance
+        configMap: finance-dashboard
         readOnly: true
