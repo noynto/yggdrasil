@@ -28,6 +28,14 @@ spec:
               containers:
                 - name: eosa
                   image: ghcr.io/noynto/eosa:1.15.1
+              # TODO: drop this initContainers override once the eosa repo's own
+              # kubernetes/deployment.yaml carries EOSA_MIGRATE_PRODUCTS_TO_JEWELS_TASK
+              # on main (fix was lost in the PR #44 merge, see fix/missing-migration-task-env-var).
+              initContainers:
+                - name: create-admin
+                  env:
+                    - name: EOSA_MIGRATE_PRODUCTS_TO_JEWELS_TASK
+                      value: "true"
       target:
         kind: Deployment
         name: eosa
