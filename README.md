@@ -39,7 +39,7 @@ yggdrasil/
 
 | App | Version | URL |
 |---|---|---|
-| [eosa](https://github.com/noynto/eosa) | 1.15.2 | https://eosa.me |
+| [eosa](https://github.com/noynto/eosa) | 1.16.0 | https://eosa.me |
 
 ## Security
 
