@@ -6,7 +6,6 @@ resources:
   - mosquitto-pvc.yaml
   - mosquitto-deployment.yaml
   - mosquitto-service.yaml
-  - zigbee2mqtt-configmap.yaml
   - zigbee2mqtt-pvc.yaml
   - zigbee2mqtt-deployment.yaml
   - zigbee2mqtt-service.yaml

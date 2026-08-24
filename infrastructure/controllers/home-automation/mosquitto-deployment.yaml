@@ -44,7 +44,6 @@ spec:
               mountPath: /mosquitto/config
             - name: secrets
               mountPath: /mosquitto/secrets
-              readOnly: true
             - name: data
               mountPath: /mosquitto/data
           readinessProbe:
