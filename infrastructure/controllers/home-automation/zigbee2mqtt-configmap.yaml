@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: zigbee2mqtt-config
+  namespace: home-automation
+data:
+  configuration.yaml: |
+    homeassistant: false
+    permit_join: false
+    mqtt:
+      server: mqtt://mosquitto:1883
+      base_topic: zigbee2mqtt
+    serial:
+      adapter: ember
+      port: tcp://192.168.1.56:6638
+    frontend:
+      enabled: true
+      port: 8080
+    advanced:
+      network_key: GENERATE

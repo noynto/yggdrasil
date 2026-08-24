@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zigbee2mqtt
+  namespace: home-automation
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zigbee2mqtt
+  template:
+    metadata:
+      labels:
+        app: zigbee2mqtt
+    spec:
+      containers:
+        - name: zigbee2mqtt
+          image: koenkk/zigbee2mqtt:2.1.3
+          env:
+            - name: ZIGBEE2MQTT_CONFIG_MQTT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mosquitto-credentials
+                  key: username
+            - name: ZIGBEE2MQTT_CONFIG_MQTT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mosquitto-credentials
+                  key: password
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: config
+              mountPath: /app/data/configuration.yaml
+              subPath: configuration.yaml
+            - name: data
+              mountPath: /app/data
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 15
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 30
+      volumes:
+        - name: config
+          configMap:
+            name: zigbee2mqtt-config
+        - name: data
+          persistentVolumeClaim:
+            claimName: zigbee2mqtt-data

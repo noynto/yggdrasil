@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mosquitto
+  namespace: home-automation
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mosquitto
+  template:
+    metadata:
+      labels:
+        app: mosquitto
+    spec:
+      initContainers:
+        - name: init-passwd
+          image: eclipse-mosquitto:2.0.18
+          command:
+            - sh
+            - -c
+            - mosquitto_passwd -b -c /mosquitto/secrets/passwd "$MQTT_USERNAME" "$MQTT_PASSWORD"
+          env:
+            - name: MQTT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mosquitto-credentials
+                  key: username
+            - name: MQTT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mosquitto-credentials
+                  key: password
+          volumeMounts:
+            - name: secrets
+              mountPath: /mosquitto/secrets
+      containers:
+        - name: mosquitto
+          image: eclipse-mosquitto:2.0.18
+          ports:
+            - containerPort: 1883
+          volumeMounts:
+            - name: config
+              mountPath: /mosquitto/config
+            - name: secrets
+              mountPath: /mosquitto/secrets
+              readOnly: true
+            - name: data
+              mountPath: /mosquitto/data
+          readinessProbe:
+            tcpSocket:
+              port: 1883
+            initialDelaySeconds: 5
+            periodSeconds: 15
+          livenessProbe:
+            tcpSocket:
+              port: 1883
+            initialDelaySeconds: 10
+            periodSeconds: 30
+      volumes:
+        - name: config
+          configMap:
+            name: mosquitto-config
+        - name: secrets
+          emptyDir: {}
+        - name: data
+          persistentVolumeClaim:
+            claimName: mosquitto-data
