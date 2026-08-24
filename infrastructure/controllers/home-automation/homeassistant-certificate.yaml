@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: homeassistant-tls
+  namespace: home-automation
+spec:
+  secretName: homeassistant-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  commonName: homeassistant.noynto.me
+  dnsNames:
+    - homeassistant.noynto.me

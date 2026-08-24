@@ -19,7 +19,9 @@ spec:
           command:
             - sh
             - -c
-            - mosquitto_passwd -b -c /mosquitto/secrets/passwd "$MQTT_USERNAME" "$MQTT_PASSWORD"
+            - |
+              mosquitto_passwd -b -c /mosquitto/secrets/passwd "$MQTT_USERNAME" "$MQTT_PASSWORD"
+              mosquitto_passwd -b /mosquitto/secrets/passwd "$HA_MQTT_USERNAME" "$HA_MQTT_PASSWORD"
           env:
             - name: MQTT_USERNAME
               valueFrom:
@@ -30,6 +32,16 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: mosquitto-credentials
+                  key: password
+            - name: HA_MQTT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: homeassistant-mqtt-credentials
+                  key: username
+            - name: HA_MQTT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: homeassistant-mqtt-credentials
                   key: password
           volumeMounts:
             - name: secrets

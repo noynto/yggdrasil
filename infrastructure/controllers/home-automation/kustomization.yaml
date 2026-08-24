@@ -9,3 +9,8 @@ resources:
   - zigbee2mqtt-pvc.yaml
   - zigbee2mqtt-deployment.yaml
   - zigbee2mqtt-service.yaml
+  - homeassistant-pvc.yaml
+  - homeassistant-deployment.yaml
+  - homeassistant-service.yaml
+  - homeassistant-certificate.yaml
+  - homeassistant-ingress.yaml
