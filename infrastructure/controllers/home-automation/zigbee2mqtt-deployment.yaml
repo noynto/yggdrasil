@@ -32,14 +32,14 @@ spec:
                   name: mosquitto-credentials
                   key: password
             - name: ZIGBEE2MQTT_CONFIG_SERIAL_ADAPTER
-              value: ember
+              value: zstack
             - name: ZIGBEE2MQTT_CONFIG_SERIAL_PORT
               value: tcp://192.168.1.56:6638
             - name: ZIGBEE2MQTT_CONFIG_FRONTEND_ENABLED
               value: "true"
             - name: ZIGBEE2MQTT_CONFIG_FRONTEND_PORT
               value: "8080"
-            - name: ZIGBEE2MQTT_CONFIG_HOMEASSISTANT
+            - name: ZIGBEE2MQTT_CONFIG_HOMEASSISTANT_ENABLED
               value: "false"
             - name: ZIGBEE2MQTT_CONFIG_PERMIT_JOIN
               value: "false"
