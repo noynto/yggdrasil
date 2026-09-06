@@ -35,19 +35,6 @@ spec:
         apiVersion: apps/v1
         kind: StatefulSet
         metadata:
-          name: mongodb
-        spec:
-          template:
-            spec:
-              securityContext:
-                fsGroup: 999
-      target:
-        kind: StatefulSet
-        name: mongodb
-    - patch: |
-        apiVersion: apps/v1
-        kind: StatefulSet
-        metadata:
           name: postgres
         spec:
           template:
