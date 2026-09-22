@@ -7,5 +7,4 @@ resources:
   - metallb
   - longhorn
   - metrics-server
-  - ntfy
   - home-automation
