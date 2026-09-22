@@ -10,15 +10,6 @@ spec:
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
-  name: jetstack
-  namespace: flux-system
-spec:
-  interval: 24h
-  url: https://charts.jetstack.io
----
-apiVersion: source.toolkit.fluxcd.io/v1
-kind: HelmRepository
-metadata:
   name: metallb
   namespace: flux-system
 spec:
