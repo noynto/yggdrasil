@@ -8,5 +8,4 @@ resources:
   - longhorn
   - metrics-server
   - ntfy
-  - monitoring
   - home-automation
