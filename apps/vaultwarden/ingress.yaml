@@ -3,6 +3,10 @@ kind: Ingress
 metadata:
   name: vaultwarden
   namespace: vaultwarden
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "128m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "90"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "90"
 spec:
   ingressClassName: nginx
   tls:

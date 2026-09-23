@@ -25,7 +25,29 @@ spec:
               value: https://vault.noynto.me
             - name: SIGNUPS_ALLOWED
               value: "false"
+            - name: INVITATIONS_ALLOWED
+              value: "true"
             - name: WEBSOCKET_ENABLED
+              value: "true"
+            - name: IP_HEADER
+              value: X-Real-IP
+            - name: SHOW_PASSWORD_HINT
+              value: "false"
+            - name: PASSWORD_ITERATIONS
+              value: "600000"
+            - name: ORG_EVENTS_ENABLED
+              value: "true"
+            - name: EMERGENCY_ACCESS_ALLOWED
+              value: "true"
+            - name: SENDS_ALLOWED
+              value: "true"
+            - name: TRASH_AUTO_DELETE_DAYS
+              value: "30"
+            - name: INCOMPLETE_2FA_TIME_LIMIT
+              value: "3"
+            - name: LOG_LEVEL
+              value: warn
+            - name: EXTENDED_LOGGING
               value: "true"
             - name: ADMIN_TOKEN
               valueFrom:
@@ -37,6 +59,20 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /data
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
           readinessProbe:
             httpGet:
               path: /alive
