@@ -5,7 +5,5 @@ resources:
   - certificate.yaml
   - eosa-config.yaml
   - ingress.yaml
-  - certificate-admin.yaml
-  - ingress-admin.yaml
   - gitrepository.yaml
   - flux-kustomization.yaml
