@@ -7,16 +7,29 @@ on:
 permissions:
   contents: read
 
+env:
+  KUBECONFORM_VERSION: v0.8.0
+  KUBECONFORM_SHA256: 9bc2bffbf71f261128533edaf912153948b7ff238f9a531ae6d34466ec287883
+  KUBECONFORM_CACHE: ${{ github.workspace }}/.kubeconform-cache
+
 jobs:
   kubeconform:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Install kubeconform
         run: |
-          curl -sSL https://github.com/yannh/kubeconform/releases/download/v0.8.0/kubeconform-linux-amd64.tar.gz \
-            | tar xz -C /usr/local/bin kubeconform
+          curl -sSL -o kubeconform.tgz "https://github.com/yannh/kubeconform/releases/download/${KUBECONFORM_VERSION}/kubeconform-linux-amd64.tar.gz"
+          echo "${KUBECONFORM_SHA256}  kubeconform.tgz" | sha256sum -c -
+          tar xz -C /usr/local/bin -f kubeconform.tgz kubeconform
+
+      - name: Cache CRD schemas
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ env.KUBECONFORM_CACHE }}
+          key: kubeconform-schemas-${{ env.KUBECONFORM_VERSION }}-${{ hashFiles('**/*.yaml') }}
+          restore-keys: kubeconform-schemas-${{ env.KUBECONFORM_VERSION }}-
 
       - name: Validate manifests and Kustomize builds
         run: ./scripts/validate.sh

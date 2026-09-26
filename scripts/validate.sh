@@ -14,6 +14,11 @@ kubeconform_flags=(
   -summary
 )
 
+if [ -n "${KUBECONFORM_CACHE:-}" ]; then
+  mkdir -p "$KUBECONFORM_CACHE"
+  kubeconform_flags+=(-cache "$KUBECONFORM_CACHE")
+fi
+
 if command -v kustomize >/dev/null; then
   build=(kustomize build)
 else
