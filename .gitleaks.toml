@@ -1,0 +1,8 @@
+title = "yggdrasil"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "SealedSecrets ciphertext is encrypted with the controller's public key and safe to publish"
+regexes = ['''^Ag[A-Za-z0-9+/=]{200,}$''']
