@@ -45,6 +45,10 @@ Reconciliation order (`dependsOn`): `infrastructure-controllers` → `infrastruc
 - **Helm components** (ingress-nginx, metallb, longhorn): `helmrepository.yaml` + `helmrelease.yaml` + `namespace.yaml` in the component directory.
 - **Vendored upstream manifests** (cert-manager, metrics-server): the project's official static install manifest is committed as `upstream-*.yaml` and referenced by the component's `kustomization.yaml` (plus patches if needed). No remote bases: Flux advises against fetching them at reconcile time. To upgrade, download the new release manifest, replace the file, and check for kube-system-scoped RBAC before adding any namespace override.
 
+### Namespaces
+
+Every `Namespace` declared here carries `kustomize.toolkit.fluxcd.io/prune: disabled`: deleting a Namespace cascades to everything inside it (PVCs, manually created Secrets), so Flux must never prune one, for instance when its manifest moves between Kustomizations. To decommission a component, delete its resources through Git, then remove the annotation from the live Namespace (or delete it by hand) once you are sure nothing in it is needed.
+
 ### App conventions
 
 - **Apps with their own repository** (eosa, finance): `gitrepository.yaml` + `flux-kustomization.yaml` (nested Flux Kustomization). The namespace must be declared in only one place.
