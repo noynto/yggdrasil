@@ -2,7 +2,7 @@
 
 > L'arbre cosmique qui relie et soutient tous les mondes.
 
-GitOps repository for my homelab infrastructure, managed by [Flux CD](https://fluxcd.io/).
+GitOps repository for a production-grade Kubernetes cluster, managed by [Flux CD](https://fluxcd.io/).
 
 ## Clusters
 
@@ -22,24 +22,42 @@ GitOps repository for my homelab infrastructure, managed by [Flux CD](https://fl
 | Load Balancer | [MetalLB](https://metallb.universe.tf) |
 | Storage | [Longhorn](https://longhorn.io) |
 | Secrets | Kubernetes Secrets (managed manually) |
+| Notifications | Flux notification-controller → kChat (`infrastructure/configs/flux-notifications`) |
 
 ## Repository Structure
 
-\`\`\`
+Follows the layout of Flux's [flux2-kustomize-helm-example](https://github.com/fluxcd/flux2-kustomize-helm-example), single cluster (no base/overlay split).
+
+```
 yggdrasil/
 ├── clusters/
-│   └── frigg/              # Cluster-specific Flux config
+│   └── frigg/              # Flux entry point (flux-system, apps.yaml, infrastructure.yaml)
 ├── infrastructure/
-│   ├── controllers/        # Helm releases (system components)
-│   └── configs/            # Kubernetes configs
-└── apps/                   # Applications
-\`\`\`
+│   ├── controllers/        # System components (one directory per component)
+│   └── configs/            # Custom resources that depend on the controllers
+└── apps/                   # Applications (one directory per app)
+```
+
+Reconciliation order (`dependsOn`): `infrastructure-controllers` → `infrastructure-configs` → `apps`.
+
+### Component conventions
+
+- **Helm components** (ingress-nginx, metallb, longhorn): `helmrepository.yaml` + `helmrelease.yaml` + `namespace.yaml` in the component directory.
+- **Vendored upstream manifests** (cert-manager, metrics-server): the project's official static install manifest is committed as `upstream-*.yaml` and referenced by the component's `kustomization.yaml` (plus patches if needed). No remote bases: Flux advises against fetching them at reconcile time. To upgrade, download the new release manifest, replace the file, and check for kube-system-scoped RBAC before adding any namespace override.
+
+### App conventions
+
+- **Apps with their own repository** (eosa, finance): `gitrepository.yaml` + `flux-kustomization.yaml` (nested Flux Kustomization). The namespace must be declared in only one place.
+- **Apps with manifests in this repository** (home-automation, vaultwarden): plain manifests in the app directory.
 
 ## Apps
 
 | App | Version | URL |
 |---|---|---|
-| [eosa](https://github.com/noynto/eosa) | 1.16.0 | https://eosa.me |
+| [eosa](https://github.com/noynto/eosa) | 1.21.0 | https://eosa.me |
+| [finance](https://github.com/noynto/finance) | tracks `main` | https://finance.noynto.me |
+| Home Assistant (+ Mosquitto, Zigbee2MQTT) | 2026.8.2 | https://homeassistant.noynto.me |
+| Vaultwarden | 1.37.2 | https://vault.noynto.me |
 
 ## Security
 
