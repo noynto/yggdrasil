@@ -58,12 +58,10 @@ Every `Namespace` declared here carries `kustomize.toolkit.fluxcd.io/prune: disa
 
 | App | Version | URL |
 |---|---|---|
-| [eosa](https://github.com/noynto/eosa) | 1.24.0 | https://eosa.me |
+| [eosa](https://github.com/noynto/eosa) | 1.21.1 | https://eosa.me |
 | [finance](https://github.com/noynto/finance) | tracks `main` | https://finance.noynto.me |
 | Home Assistant (+ Mosquitto, Zigbee2MQTT) | 2026.8.2 | https://homeassistant.noynto.me |
 | Vaultwarden | 1.37.2 | https://vault.noynto.me |
-
-The eosa administration runs on a separate server (since 1.24.0) and has no Ingress: `kubectl port-forward -n eosa svc/eosa-admin 18080:18080`, then open http://localhost:18080.
 
 ## Security
 
