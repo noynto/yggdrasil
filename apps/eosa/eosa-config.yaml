@@ -2,5 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: eosa-configs
+  namespace: eosa
 data:
-  base-url: "https://eosa.me"
+  public-base-url: "https://eosa.me"
+  admin-base-url: "http://localhost:18080"
