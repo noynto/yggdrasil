@@ -63,7 +63,7 @@ Every `Namespace` declared here carries `kustomize.toolkit.fluxcd.io/prune: disa
 | Home Assistant (+ Mosquitto, Zigbee2MQTT) | 2026.8.2 | https://homeassistant.noynto.me |
 | Vaultwarden | 1.37.2 | https://vault.noynto.me |
 
-The eosa administration runs on a separate server (since 1.24.0) and has no Ingress: `kubectl port-forward -n eosa svc/eosa-admin 18080:18080`, then open http://localhost:18080.
+The eosa administration runs on a separate server (since 1.24.0), served at https://admin.eosa.me through its own Ingress, protected by the application login and an nginx rate limit. From inside the cluster, the Service is `eosa-admin:18080`.
 
 ## Security
 
