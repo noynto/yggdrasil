@@ -5,4 +5,4 @@ metadata:
   namespace: eosa
 data:
   public-base-url: "https://eosa.me"
-  admin-base-url: "https://admin.eosa.me"
+  admin-base-url: "http://localhost:18080"
