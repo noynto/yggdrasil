@@ -25,6 +25,9 @@ spec:
         spec:
           template:
             spec:
+              initContainers:
+                - name: create-admin
+                  image: ghcr.io/noynto/eosa:1.21.0
               containers:
                 - name: eosa
                   image: ghcr.io/noynto/eosa:1.21.0
