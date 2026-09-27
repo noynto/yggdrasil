@@ -4,6 +4,7 @@ metadata:
   name: eosa-configs
   namespace: eosa
 data:
-  base-url: "https://eosa.me"
+  public-base-url: "https://eosa.me"
+  admin-base-url: "http://localhost:18080"
   shipping-amount: "5.00"
   shipping-free-threshold: "50.00"
