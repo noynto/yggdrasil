@@ -27,10 +27,10 @@ spec:
             spec:
               initContainers:
                 - name: create-admin
-                  image: ghcr.io/noynto/eosa:1.21.1
+                  image: ghcr.io/noynto/eosa:1.21.2
               containers:
                 - name: eosa
-                  image: ghcr.io/noynto/eosa:1.21.1
+                  image: ghcr.io/noynto/eosa:1.21.2
       target:
         kind: Deployment
         name: eosa

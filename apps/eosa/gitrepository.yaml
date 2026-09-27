@@ -7,4 +7,4 @@ spec:
   interval: 1m
   url: https://github.com/noynto/eosa
   ref:
-    tag: v1.21.1
+    tag: v1.21.2
