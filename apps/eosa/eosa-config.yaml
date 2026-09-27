@@ -5,6 +5,6 @@ metadata:
   namespace: eosa
 data:
   public-base-url: "https://eosa.me"
-  admin-base-url: "http://localhost:18080"
+  admin-base-url: "https://admin.eosa.me"
   shipping-amount: "5.00"
   shipping-free-threshold: "50.00"
