@@ -30,7 +30,13 @@ spec:
         apiVersion: 1
         datasources:
           - name: Prometheus
+            uid: prometheus
             type: prometheus
             url: http://prometheus-server.monitoring.svc.cluster.local
             access: proxy
             isDefault: true
+    sidecar:
+      dashboards:
+        enabled: true
+        label: grafana_dashboard
+        labelValue: "1"
