@@ -149,10 +149,28 @@ data:
         {
           "id": 8,
           "title": "Throttling CPU (cooling device)",
-          "type": "timeseries",
+          "type": "state-timeline",
           "gridPos": { "h": 8, "w": 8, "x": 16, "y": 6 },
           "datasource": { "type": "prometheus", "uid": "prometheus" },
-          "fieldConfig": { "defaults": { "unit": "short", "min": 0 }, "overrides": [] },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "green", "value": null },
+                  { "color": "red", "value": 1 }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "options": {
+            "mergeValues": true,
+            "showValue": "never",
+            "alignValue": "left",
+            "rowHeight": 0.9
+          },
           "targets": [
             {
               "datasource": { "type": "prometheus", "uid": "prometheus" },
@@ -190,11 +208,9 @@ data:
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": { "defaults": { "unit": "hertz" }, "overrides": [] },
           "targets": [
-            {
-              "datasource": { "type": "prometheus", "uid": "prometheus" },
-              "expr": "node_cpu_scaling_frequency_hertz",
-              "legendFormat": "cpu {{cpu}}"
-            }
+            { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "avg(node_cpu_scaling_frequency_hertz)", "legendFormat": "moyenne" },
+            { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "min(node_cpu_scaling_frequency_hertz)", "legendFormat": "min" },
+            { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "max(node_cpu_scaling_frequency_hertz)", "legendFormat": "max" }
           ]
         },
         {
