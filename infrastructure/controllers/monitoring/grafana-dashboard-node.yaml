@@ -141,8 +141,8 @@ data:
           "targets": [
             {
               "datasource": { "type": "prometheus", "uid": "prometheus" },
-              "expr": "node_hwmon_temp_celsius",
-              "legendFormat": "{{chip}} {{sensor}}"
+              "expr": "(node_hwmon_temp_celsius * on(chip, sensor, instance) group_left(label) node_hwmon_sensor_label) * on(chip, instance) group_left(chip_name) node_hwmon_chip_names",
+              "legendFormat": "{{chip_name}} - {{label}}"
             }
           ]
         },
