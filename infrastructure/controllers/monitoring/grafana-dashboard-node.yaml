@@ -254,8 +254,8 @@ data:
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": { "defaults": { "unit": "Bps" }, "overrides": [] },
           "targets": [
-            { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "rate(node_disk_read_bytes_total[5m])", "legendFormat": "{{device}} lecture" },
-            { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "rate(node_disk_written_bytes_total[5m])", "legendFormat": "{{device}} écriture" }
+            { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "rate(node_disk_read_bytes_total{device=\"nvme0n1\"}[5m])", "legendFormat": "{{device}} lecture" },
+            { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "rate(node_disk_written_bytes_total{device=\"nvme0n1\"}[5m])", "legendFormat": "{{device}} écriture" }
           ]
         },
         {
@@ -272,8 +272,8 @@ data:
           "datasource": { "type": "prometheus", "uid": "prometheus" },
           "fieldConfig": { "defaults": { "unit": "bps" }, "overrides": [] },
           "targets": [
-            { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "rate(node_network_receive_bytes_total{device!~\"lo|veth.*|docker.*|br-.*\"}[5m]) * 8", "legendFormat": "{{device}} rx" },
-            { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "rate(node_network_transmit_bytes_total{device!~\"lo|veth.*|docker.*|br-.*\"}[5m]) * 8", "legendFormat": "{{device}} tx" }
+            { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "rate(node_network_receive_bytes_total{device!~\"lo|veth.*|docker.*|br-.*|.*tnl.*|sit.*|tunl.*\"}[5m]) * 8", "legendFormat": "{{device}} rx" },
+            { "datasource": { "type": "prometheus", "uid": "prometheus" }, "expr": "rate(node_network_transmit_bytes_total{device!~\"lo|veth.*|docker.*|br-.*|.*tnl.*|sit.*|tunl.*\"}[5m]) * 8", "legendFormat": "{{device}} tx" }
           ]
         }
       ]
