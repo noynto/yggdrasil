@@ -1,0 +1,67 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: alloy
+  namespace: monitoring
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: alloy
+      version: ">=1.0.0 <2.0.0"
+      sourceRef:
+        kind: HelmRepository
+        name: grafana
+        namespace: flux-system
+      interval: 12h
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    alloy:
+      configMap:
+        content: |
+          prometheus.exporter.unix "node" {
+            rootfs_path = "/host/root"
+            procfs_path = "/host/proc"
+            sysfs_path  = "/host/sys"
+          }
+
+          prometheus.scrape "node" {
+            targets         = prometheus.exporter.unix.node.targets
+            forward_to      = [prometheus.remote_write.prometheus.receiver]
+            scrape_interval = "30s"
+          }
+
+          prometheus.remote_write "prometheus" {
+            endpoint {
+              url = "http://prometheus-server.monitoring.svc.cluster.local/api/v1/write"
+            }
+          }
+      mounts:
+        extra:
+          - name: rootfs
+            mountPath: /host/root
+            readOnly: true
+          - name: procfs
+            mountPath: /host/proc
+            readOnly: true
+          - name: sysfs
+            mountPath: /host/sys
+            readOnly: true
+    controller:
+      volumes:
+        extra:
+          - name: rootfs
+            hostPath:
+              path: /
+          - name: procfs
+            hostPath:
+              path: /proc
+          - name: sysfs
+            hostPath:
+              path: /sys

@@ -6,3 +6,4 @@ resources:
   - metallb
   - longhorn
   - metrics-server
+  - monitoring
