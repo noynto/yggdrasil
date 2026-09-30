@@ -27,6 +27,7 @@ spec:
     persistence:
       defaultClass: true
       defaultClassReplicaCount: 1
+      reclaimPolicy: Retain
     csi:
       attacherReplicaCount: 1
       provisionerReplicaCount: 1
