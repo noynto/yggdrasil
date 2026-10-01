@@ -528,7 +528,7 @@ data:
             "h": 1,
             "w": 24,
             "x": 0,
-            "y": 31
+            "y": 39
           },
           "description": "Espace et débit du disque physique."
         },
@@ -540,7 +540,7 @@ data:
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 32
+            "y": 40
           },
           "datasource": {
             "type": "prometheus",
@@ -574,7 +574,7 @@ data:
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 32
+            "y": 40
           },
           "datasource": {
             "type": "prometheus",
@@ -614,7 +614,7 @@ data:
             "h": 1,
             "w": 24,
             "x": 0,
-            "y": 40
+            "y": 56
           },
           "description": "Débit de l'interface réseau physique."
         },
@@ -624,9 +624,9 @@ data:
           "type": "timeseries",
           "gridPos": {
             "h": 8,
-            "w": 24,
+            "w": 12,
             "x": 0,
-            "y": 41
+            "y": 57
           },
           "datasource": {
             "type": "prometheus",
@@ -657,6 +657,153 @@ data:
             }
           ],
           "description": "Débit entrant/sortant sur l'interface physique (eth0) uniquement, exclut les interfaces de tunnel du kernel (toujours à 0)."
+        },
+        {
+          "id": 19,
+          "title": "Répartition CPU par mode",
+          "type": "timeseries",
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 31
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "Pourquoi le CPU est occupé : user (applications), system (noyau), iowait (attente disque), irq/softirq (interruptions). Un iowait élevé indique que le disque est le goulot, pas le CPU.",
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percent",
+              "min": 0,
+              "custom": {
+                "stacking": {
+                  "mode": "normal"
+                },
+                "fillOpacity": 20
+              }
+            },
+            "overrides": []
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "100 * sum by (mode) (rate(node_cpu_seconds_total{mode!=\"idle\"}[5m])) / scalar(count(count by (cpu) (node_cpu_seconds_total)))",
+              "legendFormat": "{{mode}}"
+            }
+          ]
+        },
+        {
+          "id": 20,
+          "title": "Inodes utilisés (/var)",
+          "type": "timeseries",
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 48
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "Un disque peut manquer d'inodes (trop de petits fichiers) avant de manquer d'espace. Filet de sécurité complémentaire au panneau d'espace disque.",
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percent",
+              "min": 0,
+              "max": 100,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 80
+                  },
+                  {
+                    "color": "red",
+                    "value": 95
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "100 * (1 - node_filesystem_files_free{mountpoint=\"/var\"} / node_filesystem_files{mountpoint=\"/var\"})",
+              "legendFormat": "/var"
+            }
+          ]
+        },
+        {
+          "id": 21,
+          "title": "Erreurs / drops réseau",
+          "type": "timeseries",
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 57
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "description": "Erreurs et paquets perdus sur l'interface physique (eth0). Reste à 0 en fonctionnement normal : la moindre valeur non nulle signale un problème de carte réseau, de câble ou de pilote, invisible sur le seul débit.",
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short",
+              "min": 0
+            },
+            "overrides": []
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "rate(node_network_receive_errs_total{device!~\"lo|veth.*|docker.*|br-.*|.*tnl.*|sit.*|tunl.*\"}[5m])",
+              "legendFormat": "{{device}} rx erreurs"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "rate(node_network_receive_drop_total{device!~\"lo|veth.*|docker.*|br-.*|.*tnl.*|sit.*|tunl.*\"}[5m])",
+              "legendFormat": "{{device}} rx drops"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "rate(node_network_transmit_errs_total{device!~\"lo|veth.*|docker.*|br-.*|.*tnl.*|sit.*|tunl.*\"}[5m])",
+              "legendFormat": "{{device}} tx erreurs"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "expr": "rate(node_network_transmit_drop_total{device!~\"lo|veth.*|docker.*|br-.*|.*tnl.*|sit.*|tunl.*\"}[5m])",
+              "legendFormat": "{{device}} tx drops"
+            }
+          ]
         }
       ]
     }
