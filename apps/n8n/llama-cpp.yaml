@@ -1,0 +1,152 @@
+# Local LLM for n8n's AI agents only. No Ingress: llama-server has no
+# authentication, it stays reachable from inside the cluster as an
+# OpenAI-compatible API at http://llama-cpp.n8n.svc.cluster.local:8080/v1
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: llama-cpp-models
+  namespace: n8n
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      # Room for a second ~5 GB model to compare against (e.g. Granite 4.2 8B).
+      storage: 15Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llama-cpp
+  namespace: n8n
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: llama-cpp
+  template:
+    metadata:
+      labels:
+        app: llama-cpp
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        # Downloads the model once, pinned to a repository revision and verified
+        # against its SHA-256 before being moved into place; skipped when present.
+        - name: fetch-model
+          image: curlimages/curl:8.22.0
+          env:
+            - name: MODEL_FILE
+              value: LFM2.5-8B-A1B-Q4_K_M.gguf
+            - name: MODEL_URL
+              value: https://huggingface.co/LiquidAI/LFM2.5-8B-A1B-GGUF/resolve/49c14831707011e64d70b2ebd8462ba08d608434/LFM2.5-8B-A1B-Q4_K_M.gguf
+            - name: MODEL_SHA256
+              value: 4923ec14f06b968b74d663e5949867d2d9c3bf13a20b8be1a9f9af39989b2bb0
+          command:
+            - sh
+            - -c
+            - |
+              set -eu
+              f="/models/$MODEL_FILE"
+              if [ -f "$f" ]; then echo "model already present"; exit 0; fi
+              curl -fL --retry 5 --retry-delay 5 -C - -o "$f.part" "$MODEL_URL"
+              echo "$MODEL_SHA256  $f.part" | sha256sum -c -
+              mv "$f.part" "$f"
+          volumeMounts:
+            - name: models
+              mountPath: /models
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+      containers:
+        - name: llama-server
+          image: ghcr.io/ggml-org/llama.cpp:server-b11382
+          args:
+            - --model
+            - /models/LFM2.5-8B-A1B-Q4_K_M.gguf
+            - --alias
+            - lfm2.5-8b-a1b
+            - --host
+            - 0.0.0.0
+            - --port
+            - "8080"
+            # Matches limits.cpu: more threads than the CPU quota just get throttled.
+            - --threads
+            - "6"
+            - --threads-batch
+            - "6"
+            - --ctx-size
+            - "16384"
+            # One request at a time, so memory stays bounded.
+            - --parallel
+            - "1"
+            # Prompt cache defaults to 8 GiB of RAM, more than the whole memory limit.
+            - --cache-ram
+            - "1024"
+            - --metrics
+          ports:
+            - name: http
+              containerPort: 8080
+          volumeMounts:
+            - name: models
+              mountPath: /models
+              readOnly: true
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 30
+            failureThreshold: 3
+          resources:
+            # Low CPU request: under contention, Linux shares CPU time in proportion to
+            # requests, so llama.cpp yields to eosa while still using up to 6 cores
+            # when the node is idle.
+            requests:
+              cpu: "1"
+              memory: 6Gi
+            limits:
+              cpu: "6"
+              memory: 8Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+      volumes:
+        - name: models
+          persistentVolumeClaim:
+            claimName: llama-cpp-models
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: llama-cpp
+  namespace: n8n
+spec:
+  selector:
+    app: llama-cpp
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http

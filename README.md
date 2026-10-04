@@ -62,7 +62,7 @@ Every `Namespace` declared here carries `kustomize.toolkit.fluxcd.io/prune: disa
 | [finance](https://github.com/noynto/finance) | tracks `main` | https://finance.noynto.me |
 | Home Assistant (+ Mosquitto, Zigbee2MQTT) | 2026.8.2 | https://homeassistant.noynto.me |
 | Vaultwarden | 1.37.2 | https://vault.noynto.me |
-| n8n (+ Postgres 18) | 2.41.6 | https://n8n.noynto.me |
+| n8n (+ Postgres 18, llama.cpp with LFM2.5-8B-A1B for local AI agents) | 2.41.6 | https://n8n.noynto.me |
 
 The eosa administration runs on a separate server (since 1.24.0), served at https://admin.eosa.me through its own Ingress, protected by the application login and an nginx rate limit. From inside the cluster, the Service is `eosa-admin:18080`.
 
