@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: n8n-postgres-init
+  namespace: n8n
+data:
+  # Runs once, on an empty data directory only. Creates a dedicated, non-superuser
+  # role for n8n that owns its database; the postgres superuser is never used by n8n.
+  # The password goes through a psql variable (:'n8n_password'), not shell
+  # interpolation, so special characters in it can't break or inject into the SQL.
+  01-n8n.sh: |
+    #!/bin/sh
+    set -eu
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname postgres \
+      -v n8n_password="$N8N_DB_PASSWORD" <<'EOSQL'
+    CREATE ROLE n8n LOGIN PASSWORD :'n8n_password';
+    CREATE DATABASE n8n OWNER n8n;
+    REVOKE ALL ON DATABASE n8n FROM PUBLIC;
+    EOSQL

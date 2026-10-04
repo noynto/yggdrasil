@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: n8n
+  namespace: n8n
+  annotations:
+    # File uploads and webhook payloads can exceed nginx's 1m default.
+    nginx.ingress.kubernetes.io/proxy-body-size: "64m"
+    # The editor keeps a long-lived push connection (websocket) open.
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - n8n.noynto.me
+      secretName: n8n-tls
+  rules:
+    - host: n8n.noynto.me
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: n8n
+                port:
+                  number: 80

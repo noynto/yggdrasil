@@ -5,3 +5,4 @@ resources:
   - finance
   - home-automation
   - vaultwarden
+  - n8n
