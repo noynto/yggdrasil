@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: n8n-tls
+  namespace: n8n
+spec:
+  secretName: n8n-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  commonName: n8n.noynto.me
+  dnsNames:
+    - n8n.noynto.me
