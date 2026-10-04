@@ -91,7 +91,7 @@ spec:
             # One request at a time, so memory stays bounded.
             - --parallel
             - "1"
-            # Prompt cache defaults to 8 GiB of RAM, more than the whole memory limit.
+            # Prompt cache defaults to 8 GiB of RAM, most of the memory limit.
             - --cache-ram
             - "1024"
             - --metrics
@@ -125,10 +125,10 @@ spec:
             # when the node is idle.
             requests:
               cpu: "1"
-              memory: 6Gi
+              memory: 8Gi
             limits:
               cpu: "6"
-              memory: 8Gi
+              memory: 10Gi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
