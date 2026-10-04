@@ -5,5 +5,6 @@ resources:
   - postgres-init.yaml
   - postgres.yaml
   - n8n.yaml
+  - llama-cpp.yaml
   - certificate.yaml
   - ingress.yaml
