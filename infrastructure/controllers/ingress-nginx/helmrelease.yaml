@@ -23,6 +23,10 @@ spec:
       retries: 3
   values:
     controller:
+      # TEMPORARY: needed by the kube-apiserver passthrough Ingress (infrastructure/configs/api-passthrough).
+      # Remove together with it once done.
+      extraArgs:
+        enable-ssl-passthrough: ""
       config:
         ssl-redirect: "true"
         force-ssl-redirect: "true"

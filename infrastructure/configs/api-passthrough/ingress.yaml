@@ -1,0 +1,29 @@
+# TEMPORARY: exposes the Kubernetes API on 443 through ingress-nginx, as raw TLS
+# (passthrough), so kubectl works from outside the LAN. Authentication stays the
+# kubeconfig client certificate, end to end. No IP filtering is possible in
+# passthrough mode: remove this as soon as it is no longer needed.
+#
+# Routing is by SNI: the API server certificate has no public hostname, so the
+# client sets tls-server-name: kubernetes (a SAN of that certificate), which is
+# also the host matched here.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kube-apiserver-passthrough
+  namespace: default
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: kubernetes
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: kubernetes
+                port:
+                  number: 443
