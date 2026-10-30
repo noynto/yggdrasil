@@ -32,8 +32,9 @@ spec:
       enabled: false
     server:
       retention: 15d
+      retentionSize: 8GB
       extraArgs:
         web.enable-remote-write-receiver: null
       persistentVolume:
         enabled: true
-        size: 3Gi
+        size: 10Gi
