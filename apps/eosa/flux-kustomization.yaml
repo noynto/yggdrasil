@@ -16,24 +16,10 @@ spec:
     - name: infrastructure-configs
   wait: true
   timeout: 5m
+  images:
+    - name: ghcr.io/noynto/eosa
+      newTag: 1.28.0
   patches:
-    - patch: |
-        apiVersion: apps/v1
-        kind: Deployment
-        metadata:
-          name: eosa
-        spec:
-          template:
-            spec:
-              initContainers:
-                - name: create-admin
-                  image: ghcr.io/noynto/eosa:1.27.0
-              containers:
-                - name: eosa
-                  image: ghcr.io/noynto/eosa:1.27.0
-      target:
-        kind: Deployment
-        name: eosa
     - patch: |
         apiVersion: apps/v1
         kind: StatefulSet

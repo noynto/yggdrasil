@@ -58,7 +58,7 @@ Every `Namespace` declared here carries `kustomize.toolkit.fluxcd.io/prune: disa
 
 | App | Version | URL |
 |---|---|---|
-| [eosa](https://github.com/noynto/eosa) | 1.27.0 | https://eosa.me |
+| [eosa](https://github.com/noynto/eosa) | 1.28.0 | https://eosa.me |
 | Home Assistant (+ Mosquitto, Zigbee2MQTT) | 2026.8.2 | https://homeassistant.noynto.me |
 | Vaultwarden | 1.37.2 | https://vault.noynto.me |
 | n8n (+ Postgres 18, llama.cpp with LFM2.5-8B-A1B for local AI agents) | 2.41.6 | https://n8n.noynto.me |
