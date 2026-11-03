@@ -18,7 +18,7 @@ spec:
   timeout: 5m
   images:
     - name: ghcr.io/noynto/eosa
-      newTag: 1.29.1
+      newTag: 1.29.2
   patches:
     - patch: |
         apiVersion: apps/v1
