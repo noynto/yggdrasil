@@ -26,3 +26,21 @@ spec:
       prometheus:
         serviceMonitor:
           enabled: false
+  # The statuscleaner uses hostNetwork, so on a single node its new pod cannot bind the webhook port
+  # while the old one runs: stop the old pod first. The chart does not expose this strategy.
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: metallb-frr-k8s-statuscleaner
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: metallb-frr-k8s-statuscleaner
+              spec:
+                strategy:
+                  rollingUpdate:
+                    maxSurge: 0
+                    maxUnavailable: 1
