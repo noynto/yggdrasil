@@ -6,6 +6,8 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/limit-rps: "30"
     nginx.ingress.kubernetes.io/limit-connections: "20"
+    # Collection hero videos: up to 8 MiB in the application, plus multipart overhead (nginx default is 1m)
+    nginx.ingress.kubernetes.io/proxy-body-size: "12m"
 spec:
   ingressClassName: nginx
   tls:
