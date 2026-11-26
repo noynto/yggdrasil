@@ -1,0 +1,10 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: worthfold
+  namespace: flux-system
+spec:
+  interval: 1m
+  url: https://github.com/noynto/worthfold
+  ref:
+    tag: v1.0.0
