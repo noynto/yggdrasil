@@ -31,5 +31,9 @@ spec:
         ssl-redirect: "true"
         force-ssl-redirect: "true"
       service:
+        # Keep the client source IP (no SNAT) so the applications behind the ingress see real addresses,
+        # for rate limits and per-IP throttles. Safe on a single node: the controller pod is on the
+        # node that MetalLB announces the IP from.
+        externalTrafficPolicy: Local
         annotations:
           metallb.universe.tf/loadBalancerIPs: 192.168.1.240
