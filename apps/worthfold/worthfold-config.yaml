@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: worthfold-configs
+  namespace: worthfold
+data:
+  # The address typed in the browser: it gives the accepted Host, the Secure cookie flag and HSTS.
+  WORTHFOLD_PUBLIC_URL: "https://worthfold.noynto.me"
+  # One proxy (ingress-nginx) in front of the application, for the per-IP password throttle.
+  WORTHFOLD_PROXY_HOPS: "1"
+  # Bank connection (EnableBanking) is not configured yet: both stay empty.
+  WORTHFOLD_ENABLEBANKING_APP_ID: ""
+  WORTHFOLD_ENABLEBANKING_KEY_PATH: ""
+  WORTHFOLD_BANK_REDIRECT_URL: ""
+  RUST_LOG: "info"
