@@ -19,4 +19,4 @@ spec:
   # One tag for the Deployment and the bank-sync CronJob, which ship with ghcr.io/noynto/worthfold:latest.
   images:
     - name: ghcr.io/noynto/worthfold
-      newTag: 1.0.0
+      newTag: 1.1.1
