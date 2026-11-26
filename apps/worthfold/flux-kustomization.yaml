@@ -20,3 +20,21 @@ spec:
   images:
     - name: ghcr.io/noynto/worthfold
       newTag: 1.1.1
+  patches:
+    # Kubernetes injects WORTHFOLD_PORT=tcp://<ip>:80 for the "worthfold" Service into every pod of the namespace.
+    # The Deployment overrides it with WORTHFOLD_PORT=3000, the CronJob does not and exits with
+    # "WORTHFOLD_PORT doit être un numéro de port". Stop the injection for the task.
+    - patch: |
+        apiVersion: batch/v1
+        kind: CronJob
+        metadata:
+          name: worthfold-bank-sync
+        spec:
+          jobTemplate:
+            spec:
+              template:
+                spec:
+                  enableServiceLinks: false
+      target:
+        kind: CronJob
+        name: worthfold-bank-sync
