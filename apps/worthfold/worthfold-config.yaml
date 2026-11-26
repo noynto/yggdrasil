@@ -8,8 +8,9 @@ data:
   WORTHFOLD_PUBLIC_URL: "https://worthfold.noynto.me"
   # One proxy (ingress-nginx) in front of the application, for the per-IP password throttle.
   WORTHFOLD_PROXY_HOPS: "1"
-  # Bank connection (EnableBanking) is not configured yet: both stay empty.
-  WORTHFOLD_ENABLEBANKING_APP_ID: ""
-  WORTHFOLD_ENABLEBANKING_KEY_PATH: ""
+  # Bank connection (EnableBanking): the application id, and where the Deployment mounts the private key
+  # (the enablebanking.pem key of the worthfold-secrets Secret, created by hand).
+  WORTHFOLD_ENABLEBANKING_APP_ID: "6a3c0dec-e3b8-4ff6-9755-d23477f6f98e"
+  WORTHFOLD_ENABLEBANKING_KEY_PATH: "/run/secrets/enablebanking/enablebanking.pem"
   WORTHFOLD_BANK_REDIRECT_URL: ""
   RUST_LOG: "info"
